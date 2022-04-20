@@ -11,16 +11,19 @@ public class Server {
         int port = 8089;
 
         ServerSocket server = new ServerSocket(port);
-
         while (true) {
-            Socket client = server.accept();
-            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            try (Socket client = server.accept();
+                 PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));) {
 
-            System.out.printf("New connection accepted");
+                System.out.printf("New connection accepted");
+                final String name = in.readLine();
+                out.println(String.format("Hi %s, your port is %d", name, client.getPort()));
 
-            final String name = in.readLine();
-            out.println(String.format("Hi %s, your port is %d", name, client.getPort()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }
